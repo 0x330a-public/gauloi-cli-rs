@@ -1,0 +1,27 @@
+[package]
+name = "gauloi-cli"
+version = "0.1.0"
+authors = ["0x330a <92654767+0x330a@users.noreply.github.com>"]
+license = "MIT"
+edition = "2021"
+
+[dependencies]
+bitcoin = { version = "0.30.1", features = ["default", "rand", "rand-std", "serde", "base64", "bitcoinconsensus"] }
+clap = { version = "3.2.16", features = ["derive", "cargo"] }
+rustyline = "11.0.0"
+zeroize = "1.6.0"
+shellfish = { version = "0.8.0", features = [ "clap", "async", "tokio" ] }
+async-trait = "0.1.73"
+yansi = "0.5.1"
+serde = "1"
+ciborium = { version = "0.2.1" }
+ethers = { version = "2.0.10", features = ["default", "abigen"] }
+tokio = { version = "1", features = ["full"] }
+# to enable the esplora-api serialization with block time according to the api
+esplora-api = { git = "https://github.com/0x330a/Blockstream-api-wrapper", features = ["blocking"] }
+url = "2.4.1"
+redb = "1.2.0"
+hex = "0.4.3"
+rand = "0.8.5"
+anyhow = "1.0.75"
+thiserror = "1"
