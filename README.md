@@ -9,6 +9,10 @@ in a command line.
 
 BTC to ETH p2p swaps independent on communication channel, using deterministic :tm: address creation and on-chain balances and txs
 
+Classic HTLC swap: BTC initiator creates a pre-image, shares the hash and ETH side validates it via smart contract before unlocking ETH funds. BTC funds unlocked by the preimage from an address that both parties can derive. 
+
+### Usage
+
 parties using this CLI create hot wallets in the folder that the CLI is executed then
 load BTC/ETH into account listed in the `accounts` command when you're in the CLI.
 BTC side then creates a swap via `create` command, encoding swap information including the number of each asset (derive price from ratio),
