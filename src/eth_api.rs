@@ -1,40 +1,43 @@
+//! Networked API functions for calling out to an eth client, interacting with the EVM Gauloi smart contract
+
 use std::sync::Arc;
 
-use ethers::contract::ContractCall;
-use ethers::contract::FunctionCall;
-use ethers::prelude::*;
-use ethers::utils::ChainConfig;
 use ethers::{
     abi::{Tokenizable, Tokenize},
     contract::abigen,
     prelude::{
-        k256::{ecdsa::SigningKey, Secp256k1},
-        Address, MiddlewareBuilder, SignerMiddleware,
+        Address,
+        k256::ecdsa::SigningKey, MiddlewareBuilder,
     },
     providers::{Http, Middleware, Provider},
     signers::Signer,
     types::U256,
 };
-use url::Url;
+use ethers::contract::ContractCall;
+use ethers::prelude::*;
 
+// Generate the code from the deployed ABI files
 abigen!(
     GauloiFactory,
     "./src/abi/GauloiFactory.json",
     derives(serde::Deserialize, serde::Serialize),
 );
 
+/// Ethereum API client and associated contract address
 pub struct EthApi {
     pub client: Arc<Provider<Http>>,
     gauloi_address: Address,
 }
 
 impl EthApi {
+    /// Helper to get the deployed contract address on Sepolia testnet
     fn testnet_gauloi() -> Address {
         "0x8c1f0b50D535E0c06B315Ab0d9F18775b98e4CE5"
             .parse::<Address>()
             .unwrap()
     }
 
+    /// Helper to get the deployed contract address on ETH mainnet
     pub fn mainnet_gauloi() -> Address {
         // hypothetically, in a self defence situation
         "0x0E2B0838c33e5cE63101B0FBdf86b011bd1C649D"
@@ -42,6 +45,8 @@ impl EthApi {
             .unwrap()
     }
 
+    /// Shortcut to build an [EthApi] instance on Sepolia using a public API pointing to
+    /// the Sepolia Gauloi contract
     pub fn testnet() -> Self {
         let client =
             Provider::try_from("https://eth-sepolia.public.blastapi.io".to_string()).unwrap();
@@ -51,6 +56,7 @@ impl EthApi {
         }
     }
 
+    /// Shortcut to build an [EthApi] instance using a public API pointing to the mainnet Gauloi contract
     pub fn mainnet() -> Self {
         let client = Provider::try_from("https://eth.llamarpc.com".to_string()).unwrap();
         EthApi {
@@ -59,6 +65,8 @@ impl EthApi {
         }
     }
 
+    /// Shortcut to build an [EthApi] instance using a public API, passing in a [GauloiFactory] compatible
+    /// contract address on Ethereum mainnet
     pub fn new_mainnet(gauloi_address: &str) -> Self {
         let client = Provider::try_from("https://eth.llamarpc.com".to_string()).unwrap();
         EthApi {
@@ -67,6 +75,7 @@ impl EthApi {
         }
     }
 
+    /// Get the currently available ETH balance of the supplied address using the network defined in the [EthApi] client instance
     pub async fn get_balance(&self, address: &Address) -> Result<U256, Box<dyn std::error::Error>> {
         let current_balance = self.client.get_balance(address.clone(), None).await?;
         Ok(current_balance)
